@@ -1,3 +1,5 @@
+require 'pry'
+
 class Transfer
   attr_accessor :sender, :receiver, :amount, :status
   
@@ -15,19 +17,21 @@ class Transfer
       false
     end
   end
-  
-  def execute_transaction
-    if @sender.balance < @amount || @sender.status == "closed"
+
+ def execute_transaction
+    if valid? && @status == "pending" && @sender.balance > @amount
+      @sender.balance -= @amount
+      @receiver.balance += @amount
+      @status = "complete"
+      
+    else #!@sender.valid? || @sender.balance < @amount
+      binding.pry
       @status = "rejected"
       return "Transaction rejected. Please check your account balance."
-
-    elsif @status == "complete"
-      puts "Transaction was already excuted"
-      
-    else
-      @sender.deposit(@amount * -1) 
-      @receiver.deposit(@amount)
-      @status = "complete"
+    
+    #else 
+     # @status == "complete"
+      #puts "Transaction was already excuted"
     end
   end
   
